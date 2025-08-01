@@ -13,6 +13,7 @@
 # Example:
 # bash ./scripts/open-prs.sh 80771-customer-order-details "[FEATURE] - 80771: Adding costumer order details drawer" 80771 FEATURE No
 # bash ./scripts/open-prs.sh 81375-customer-order-enum-values "[BUGFIX] - 81375: Fixing enum values" 81375 BUGFIX No
+# bash ./scripts/open-prs.sh 82315-technical-order-details-order-adjustments "[FEATURE] - 82315: technical order details order adjustments" 82315 FEATURE No
 
 if [ "$#" -ne 5 ]; then
     echo "Usage: $0 <branch_name> <title> <work_item> <pr-type> <version-change>"
