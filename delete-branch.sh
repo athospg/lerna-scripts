@@ -14,5 +14,5 @@ fi
 BRANCH_NAME="$1"
 
 lerna exec "(git branch --delete --force develop || echo fuu)
-         && (git checkout --track -b develop origin/develop || echo fuu)
-         && (git branch --delete --force $BRANCH_NAME || echo fuu)"
+  && (git checkout --track -b develop origin/develop || echo fuu)
+  && (git branch --delete --force $BRANCH_NAME || echo fuu)"

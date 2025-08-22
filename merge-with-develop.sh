@@ -9,12 +9,12 @@
 # For Lerna monorepos:
 #   Use the following command to run this script in the root of your Lerna monorepo:
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'"
-#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82928: fix: Adjust properties'"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82822: fix: Transfer scroll'"
 #
 #   This will execute the script in each package directory managed by Lerna.
 
 if [ -z "$1" ]; then
-  echo "npx lerna exec "bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'"
+  echo "npx lerna exec \"bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'\""
   exit 1
 fi
 
