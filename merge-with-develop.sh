@@ -8,12 +8,13 @@
 #
 # For Lerna monorepos:
 #   Use the following command to run this script in the root of your Lerna monorepo:
-#   npx lerna exec -- bash ../../../scripts/merge-with-develop.sh "COMMIT_MESSAGE"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82928: fix: Adjust properties'"
 #
 #   This will execute the script in each package directory managed by Lerna.
 
 if [ -z "$1" ]; then
-  echo "Usage: $0 \"COMMIT_MESSAGE\""
+  echo "npx lerna exec "bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'"
   exit 1
 fi
 
@@ -26,8 +27,9 @@ git fetch --prune --all --tags --verbose || { echo "Failed to fetch changes"; ex
 HAS_STASH=0
 # Stash current changes
 STASH_OUTPUT=$(git stash push -m "Stash before updating")
+echo $STASH_OUTPUT
 # Check if any files were stashed
-if [[ $STASH_OUTPUT != "No local changes to stash."* ]]; then
+if [[ $STASH_OUTPUT != "No local changes"* ]]; then
     HAS_STASH=1
 fi
 

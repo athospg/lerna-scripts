@@ -1,33 +1,71 @@
 #! /bin/bash
 
-# This script is used to commit and push changes in a Lerna monorepo.
+# This script is used to commit and push changes to a branch.
 # It checks for changes, commits them, and pushes to a new branch.
 # Usage:
-#   ./scripts/commit-and-push.sh "Your commit message"
-#   ./scripts/commit-and-push.sh "Your commit message" "branch-name"
-#   ./scripts/commit-and-push.sh "0000: feat: technical order details drawer" "0000-technical-order-details"
+#   ./commit-and-push.sh "Your commit message"
+#   ./commit-and-push.sh "Your commit message" "branch-name"
+#
+# For Lerna monorepos:
+#   Use the following command to run this script in the root of your Lerna monorepo:
+#   npx lerna exec "bash ../../../scripts/commit-and-push.sh 'Your commit message'"
+#   npx lerna exec "bash ../../../scripts/commit-and-push.sh 'Your commit message' branch-name"
 #
 # If the -b option is not provided, it will use the current branch.
 
+# Example:
+# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: Transfer scroll' 82822-master-data-management-test-definition-scroll-jumps-to-top"
+
 if [ -z "$1" ]; then
-  echo "Usage: $0 \"Your commit message\" <branch-name>"
+  echo "Usage: $0 'Your commit message' [branch-name]"
   exit 1
 fi
 
 COMMIT_MESSAGE="$1"
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-if [[ -n "$2" ]]; then
+if [ -n "$2" ]; then
   BRANCH_NAME="$2"
 fi
 
-# Checkout to the specified branch or create it if it doesn't exist
-lerna exec "git checkout --no-track -b $BRANCH_NAME || echo 'Branch already exists'"
 
-# Add all changes
-lerna exec "git add . || echo 'No changes to commit'"
+# Check for changes
+if git diff --quiet && git diff --cached --quiet; then
+  # echo "No changes to commit."
+  exit 0
+fi
 
-# Commit the changes
-lerna exec "git commit -m \"$COMMIT_MESSAGE\" || echo 'No changes to commit'"
+echo "Changes detected."
 
-# Push the changes to the remote repository
-lerna exec "git push --set-upstream origin $BRANCH_NAME --no-verify || echo 'No changes to push'"
+echo "\"$COMMIT_MESSAGE\""
+echo "\"$BRANCH_NAME\""
+
+# Create and switch to the new branch if it doesn't exist
+if ! git show-ref --verify --quiet refs/heads/"$BRANCH_NAME"; then
+  git checkout -b $BRANCH_NAME
+else
+  git checkout $BRANCH_NAME
+fi
+
+# Stage all changes
+git add .
+if [ $? -ne 0 ]; then
+  # echo "No changes to add."
+  exit 0
+fi
+
+# Commit changes
+git commit -m "$COMMIT_MESSAGE"
+if [ $? -ne 0 ]; then
+  echo "No changes to commit."
+  exit 0
+fi
+
+# Push changes to the remote branch
+git push --set-upstream origin $BRANCH_NAME --no-verify
+if [ $? -ne 0 ]; then
+  echo "Failed to push changes."
+  exit 1
+fi
+
+echo "Changes pushed to branch $BRANCH_NAME."
+exit 0
