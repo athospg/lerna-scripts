@@ -16,17 +16,32 @@
 # bash ./scripts/open-prs.sh 82315-technical-order-details-order-adjustments "[FEATURE] - 82315: technical order details order adjustments" 82315 FEATURE No
 # bash ./scripts/open-prs.sh 82928-adjust-properties "[FIX] - 82928: Adjust properties" 82928 BUGFIX No
 # bash ./scripts/open-prs.sh 82822-master-data-management-test-definition-scroll-jumps-to-top "[FIX] - 82822: fix: Transfer scroll" 82822 BUGFIX No
+# bash ./scripts/open-prs.sh 83335-fix-shipment-and-production-reason "[FIX] - 83335: fix: Shipment and production reason" 83335 BUGFIX No
+# bash ./scripts/open-prs.sh 82980-short-reschedule-refactor "[FIX] - 82980: fix: short reschedule refactor" 82980 BUGFIX No
+# bash ./scripts/open-prs.sh 82861-fix-diagram-modal "diagram popup" BUGFIX
+# bash ./scripts/open-prs.sh 82543-customer-order-details-general-improvements "customer order details general improvements" FEATURE
+# bash ./scripts/open-prs.sh 83807-order-management-missing-code "order management missing code to open details" BUGFIX
 
-if [ "$#" -ne 5 ]; then
+if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <branch_name> <title> <work_item> <pr-type> <version-change>"
     exit 1
 fi
 
 BRANCH_NAME=$1
 TITLE=$2
-WORK_ITEM=$3
-PR_TYPE=$4
-VERSION_CHANGE=$5
+PR_TYPE=$3
+
+WORK_ITEM=$(echo "$BRANCH_NAME" | grep -oE '^[0-9]+')
+
+PR_TYPE_UPPER=$(echo "$PR_TYPE" | tr '[:lower:]' '[:upper:]')
+case "$PR_TYPE_UPPER" in
+  "BUGFIX") PR_TYPE_ABBREVIATION="FIX" ;;
+  "FEATURE") PR_TYPE_ABBREVIATION="FEAT" ;;
+  *) PR_TYPE_ABBREVIATION="$PR_TYPE_UPPER" ;;
+esac
+TITLE="[${PR_TYPE_ABBREVIATION}] - ${WORK_ITEM}: $(echo "$PR_TYPE_ABBREVIATION" | tr '[:upper:]' '[:lower:]'): ${TITLE}"
+
+VERSION_CHANGE='No'
 
 ORG_URL="https://dev.azure.com/sms-digital"
 PROJECT_NAME="CoC Planning"
@@ -37,7 +52,7 @@ REPO_PATH="packages/mes-frontend"
 # ========= PR type string ========= #
 # ================================== #
 
-PR_TYPE_UPPER=$(echo "$PR_TYPE" | tr '[:lower:]' '[:upper:]')
+
 IS_PR_TYPE_CUSTOM=false
 # Check if the provided PR type is valid
 if [[ " ${PR_TYPES[@]} " =~ " ${PR_TYPE_UPPER} " ]]; then
