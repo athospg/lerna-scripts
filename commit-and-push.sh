@@ -15,6 +15,7 @@
 
 # Example:
 # lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: Transfer scroll' 82822-master-data-management-test-definition-scroll-jumps-to-top"
+# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: Transfer scroll' 82980-short-reschedule-refactors"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 'Your commit message' [branch-name]"
