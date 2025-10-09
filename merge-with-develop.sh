@@ -5,12 +5,14 @@
 # If the current branch is not 'develop', it attempts to merge 'develop' into it, leaving conflicts for the user to resolve.
 # Usage:
 #   ./scripts/merge-with-develop.sh "COMMIT_MESSAGE"
+#   ./scripts/merge-with-develop.sh "COMMIT_MESSAGE" --no-push
 #
 # For Lerna monorepos:
 #   Use the following command to run this script in the root of your Lerna monorepo:
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh 'COMMIT_MESSAGE'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82980: fix: short reschedule refactor'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82861: fix: diagram modal'"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '82861: fix: do not push' --no-push"
 #
 #   This will execute the script in each package directory managed by Lerna.
 
@@ -34,6 +36,15 @@ if [[ $STASH_OUTPUT != "No local changes"* ]]; then
     HAS_STASH=1
 fi
 
+# Check if '--no-push' option is passed
+NO_PUSH=false
+for arg in "$@"; do
+  if [ "$arg" == "--no-push" ]; then
+    NO_PUSH=true
+    break
+  fi
+done
+
 if [ "$CURRENT_BRANCH" == "develop" ]; then
   echo "You are on the 'develop' branch. Stashing changes, pulling updates, and reapplying the stash."
 
@@ -51,10 +62,14 @@ else
     exit 1
   fi
 
-  git push --set-upstream origin $CURRENT_BRANCH --no-verify
-  if [ $? -ne 0 ]; then
-    echo "Failed to push changes."
-    exit 1
+  if [ "$NO_PUSH" == false ]; then
+    git push --set-upstream origin $CURRENT_BRANCH --no-verify
+    if [ $? -ne 0 ]; then
+      echo "Failed to push changes."
+      exit 1
+    fi
+  else
+    echo "Skipping push due to '--no-push' option."
   fi
 fi
 

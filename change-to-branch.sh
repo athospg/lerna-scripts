@@ -19,6 +19,8 @@
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 83769-fix-ordering-after-non-piece"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 83030-delete-scheduled"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 84091-chemical-formula"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 84401-not-released-defect-definitions-visible"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 84670-formula-expression-menu"
 
 BRANCH=${1:-develop}
 

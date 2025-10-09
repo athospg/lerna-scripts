@@ -6,7 +6,7 @@
 # It will check all folders in "packages/mes-frontend" and create a pull request for each one that have the branch name provided.
 # The repository name is the same as the folder name.
 #
-# Usage: ./open-prs.sh <branch_name> <title> <work_item> <pr-type> <version-change>
+# Usage: ./open-prs.sh <branch_name> <title> <pr-type>
 # pr-type can be one of the following: SYNC, DEPLOY, BUGFIX, FEATURE, HOTFIX, Another (Please specify)
 # version-change can be one of the following: No or "new version string", the new version must follow semantic versioning (e.g., 1.0.0, 1.0.1, etc.)
 #
@@ -21,9 +21,10 @@
 # bash ./scripts/open-prs.sh 82861-fix-diagram-modal "diagram popup" BUGFIX
 # bash ./scripts/open-prs.sh 82543-customer-order-details-general-improvements "customer order details general improvements" FEATURE
 # bash ./scripts/open-prs.sh 83807-order-management-missing-code "order management missing code to open details" BUGFIX
+# bash ./scripts/open-prs.sh 84091-chemical-formula "add chemical formula construction and usage components" FEATURE
 
 if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <branch_name> <title> <work_item> <pr-type> <version-change>"
+    echo "Usage: $0 <branch_name> <title> <pr-type>"
     exit 1
 fi
 
