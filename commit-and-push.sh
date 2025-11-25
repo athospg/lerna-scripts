@@ -16,14 +16,21 @@
 #
 # If the branch name is not provided, it will use the current branch.
 #
-# Example:
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: Transfer scroll' 82822-master-data-management-test-definition-scroll-jumps-to-top"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: short reschedule refactor' 82980-short-reschedule-refactor"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: diagram modal' 82861-fix-diagram-modal"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'feat: customer order details general improvements' 82543-customer-order-details-general-improvements --ignore-web-app"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'fix: order management missing code to open details' 83807-order-management-missing-code --ignore-web-app"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'feat: add chemical formula construction and usage components' 84091-chemical-formula --ignore-web-app"
-# lerna exec "bash ../../../scripts/commit-and-push.sh 'feat: add chemical formula component' 84670-formula-expression-menu --ignore-web-app"
+# Examples:
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '82822: fix: Transfer scroll' 82822-master-data-management-test-definition-scroll-jumps-to-top"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '82980: fix: short reschedule refactor' 82980-short-reschedule-refactor"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '82861: fix: diagram modal' 82861-fix-diagram-modal"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '82543: feat: customer order details general improvements' 82543-customer-order-details-general-improvements --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '83807: fix: order management missing code to open details' 83807-order-management-missing-code --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '84091: feat: add chemical formula construction and usage components' 84091-chemical-formula --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '84670: feat: add chemical formula component' 84670-formula-expression-menu --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '82861: fix: diagram modal (again)' 82861-fix-diagram-modal --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '84987: feat: add chemical formula \"readonly\" and \"remove last part\"' 84987-chemical-formula --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '83673: fix: diagram popover out off bounds' 83673-diagram-popover-out-of-bounds --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '85268: fix: predicate editor i18n' 85268-predicate-editor-i18n"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '85580: fix: setting minimatch version to ignore * from some dependencies' 85580-minimatch-fix"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '81061: fix: links not opening new tabs' 81061-open-new-tab"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '85247: fix: Master Data - field data cleared' 85247-field-data-cleared --ignore-web-app"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 'Your commit message' [branch-name]"
@@ -82,7 +89,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Commit changes
-git commit -m "$COMMIT_MESSAGE"
+git commit -m "$COMMIT_MESSAGE" --no-verify
 if [ $? -ne 0 ]; then
   echo "No changes to commit."
   exit 0

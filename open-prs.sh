@@ -22,6 +22,12 @@
 # bash ./scripts/open-prs.sh 82543-customer-order-details-general-improvements "customer order details general improvements" FEATURE
 # bash ./scripts/open-prs.sh 83807-order-management-missing-code "order management missing code to open details" BUGFIX
 # bash ./scripts/open-prs.sh 84091-chemical-formula "add chemical formula construction and usage components" FEATURE
+# bash ./scripts/open-prs.sh 84987-chemical-formula "add chemical formula \"readonly\" and \"remove last part\"" FEATURE
+# bash ./scripts/open-prs.sh 83673-diagram-popover-out-of-bounds "fix diagram popover out off bounds" BUGFIX
+# bash ./scripts/open-prs.sh 85268-predicate-editor-i18n "fix predicate editor i18n" BUGFIX
+# bash ./scripts/open-prs.sh 85580-minimatch-fix "setting minimatch version to ignore * from some dependencies" BUGFIX
+# bash ./scripts/open-prs.sh 81061-open-new-tab "links not opening new tabs" BUGFIX
+# bash ./scripts/open-prs.sh 85247-field-data-cleared "Master Data - field data cleared" BUGFIX
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <branch_name> <title> <pr-type>"
@@ -103,18 +109,18 @@ fi
 
 REPOS=$(find "$REPO_PATH" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
 for REPO in $REPOS; do
-    echo "Processing repository: $REPO"
+    # echo "Processing repository: $REPO"
 
     # Check if the branch exists in the git repository
     git -C "$REPO_PATH/$REPO" show-ref --verify --quiet "refs/heads/$BRANCH_NAME"
     if [ $? -ne 0 ]; then
-        echo "Branch '$BRANCH_NAME' does not exist in local repository '$REPO'. Skipping..."
+        # echo "Branch '$BRANCH_NAME' does not exist in local repository '$REPO'. Skipping..."
         continue
     fi
 
     # Check if the branch exists in the repository
     if ! az repos ref list --org "$ORG_URL" --project "$PROJECT_NAME" --repository "$REPO" --filter "heads/$BRANCH_NAME" --query "[?name=='refs/heads/$BRANCH_NAME']" | grep -q "refs/heads/$BRANCH_NAME"; then
-        echo "Branch '$BRANCH_NAME' does not exist in repository '$REPO'. Skipping..."
+        # echo "Branch '$BRANCH_NAME' does not exist in repository '$REPO'. Skipping..."
         continue
     fi
 
