@@ -5,10 +5,12 @@
 #   ./delete-branch.sh "<branch-name>"
 #   ./delete-branch.sh "<branch-name>" -r
 #
-# If the -b option is not provided, it will use the current branch.
-#
 # Examples:
 #   npx lerna exec "bash ../../../scripts/delete-branch.sh 81061-open-new-tab"
+#   npx lerna exec "bash ../../../scripts/delete-branch.sh 85871-add-quality-columns"
+#   npx lerna exec "bash ../../../scripts/delete-branch.sh 85927-pltcm-add-after-dummy"
+#   npx lerna exec "bash ../../../scripts/delete-branch.sh 85913-relationship-details"
+#   npx lerna exec "bash ../../../scripts/delete-branch.sh 85247-field-data-cleared"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 \"<branch-name>\""

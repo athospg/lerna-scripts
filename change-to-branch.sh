@@ -37,7 +37,11 @@
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh feature/85717-Add-Security-Authentication-and-Authorization-in-Lookup-Tables"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85871-add-quality-columns"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85927-pltcm-add-after-dummy"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85913-relationship-details"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85247-field-data-cleared"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 86056-clear-backlog-button-icon"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 84904-fix-tests-tag"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85083-lookup-delay"
 
 BRANCH=${1:-develop}
 ONLY_IF_EXISTS=false

@@ -8,6 +8,8 @@
 #   ./commit-and-push.sh "Your commit message" --ignore-web-app
 #   ./commit-and-push.sh "Your commit message" "branch-name"
 #   ./commit-and-push.sh "Your commit message" "branch-name" --ignore-web-app
+#   ./commit-and-push.sh "Your commit message" "branch-name" --no-push
+#   ./commit-and-push.sh "Your commit message" "branch-name" --no-push --ignore-web-app
 #
 # For Lerna monorepos:
 #   Use the following command to run this script in the root of your Lerna monorepo:
@@ -31,6 +33,8 @@
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '85580: fix: setting minimatch version to ignore * from some dependencies' 85580-minimatch-fix"
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '81061: fix: links not opening new tabs' 81061-open-new-tab"
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '85247: fix: Master Data - field data cleared' 85247-field-data-cleared --ignore-web-app"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '85913: feat: wip edges component' 85913-relationship-details --no-push"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '85083: fix: Master Data - lookup table - delay when typing in edit mode' 85083-lookup-delay"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 'Your commit message' [branch-name]"

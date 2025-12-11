@@ -28,6 +28,7 @@
 # bash ./scripts/open-prs.sh 85580-minimatch-fix "setting minimatch version to ignore * from some dependencies" BUGFIX
 # bash ./scripts/open-prs.sh 81061-open-new-tab "links not opening new tabs" BUGFIX
 # bash ./scripts/open-prs.sh 85247-field-data-cleared "Master Data - field data cleared" BUGFIX
+# bash ./scripts/open-prs.sh 85083-lookup-delay 'Master Data - lookup table - delay when typing in edit mode' BUGFIX
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <branch_name> <title> <pr-type>"

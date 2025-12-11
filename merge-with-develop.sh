@@ -19,6 +19,7 @@
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '85717: feat: Add Security AuthSdk as peer dep'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '81061: fix: links not opening new tabs'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '85247: fix: Master Data - field data cleared'"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '85083: fix: Master Data - lookup table - delay when typing in edit mode'"
 #
 #   This will execute the script in each package directory managed by Lerna.
 
