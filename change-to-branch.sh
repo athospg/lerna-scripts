@@ -42,6 +42,7 @@
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 86056-clear-backlog-button-icon"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 84904-fix-tests-tag"
 #   npx lerna exec "bash ../../../scripts/change-to-branch.sh 85083-lookup-delay"
+#   npx lerna exec "bash ../../../scripts/change-to-branch.sh 86357-lookup-new-line"
 
 BRANCH=${1:-develop}
 ONLY_IF_EXISTS=false

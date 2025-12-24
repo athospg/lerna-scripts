@@ -35,6 +35,7 @@
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '85247: fix: Master Data - field data cleared' 85247-field-data-cleared --ignore-web-app"
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '85913: feat: wip edges component' 85913-relationship-details --no-push"
 #   lerna exec "bash ../../../scripts/commit-and-push.sh '85083: fix: Master Data - lookup table - delay when typing in edit mode' 85083-lookup-delay"
+#   lerna exec "bash ../../../scripts/commit-and-push.sh '86357: fix: Master Data - lookup table - delete edited data when new line is added' 86357-lookup-new-line"
 
 if [ -z "$1" ]; then
   echo "Usage: $0 'Your commit message' [branch-name]"

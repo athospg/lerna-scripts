@@ -20,6 +20,7 @@
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '81061: fix: links not opening new tabs'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '85247: fix: Master Data - field data cleared'"
 #   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '85083: fix: Master Data - lookup table - delay when typing in edit mode'"
+#   npx lerna exec "bash ../../../scripts/merge-with-develop.sh '86357: fix: Master Data - lookup table - delete edited data when new line is added'"
 #
 #   This will execute the script in each package directory managed by Lerna.
 
