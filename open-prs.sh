@@ -3,33 +3,34 @@
 # This script is used to create a pull request in Azure DevOps using the Azure CLI.
 # It requires the Azure CLI to be installed and configured with the appropriate permissions.
 #
-# It will check all folders in "packages/mes-frontend" and create a pull request for each one that have the branch name provided.
+# It will check all folders in "packages/mes-frontend" and create a pull request for each one that has the branch name provided.
 # The repository name is the same as the folder name.
 #
-# Usage: ./open-prs.sh <branch_name> <title> <pr-type>
-# pr-type can be one of the following: SYNC, DEPLOY, BUGFIX, FEATURE, HOTFIX, Another (Please specify)
-# version-change can be one of the following: No or "new version string", the new version must follow semantic versioning (e.g., 1.0.0, 1.0.1, etc.)
+# Prerequisites:
+#   1. Install the Azure CLI:
+#        - Windows: winget install -e --id Microsoft.AzureCLI
+#        - macOS:   brew update && brew install azure-cli
+#        - Linux:   curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+#   2. Sign in to Azure DevOps:
+#        az login
+#   3. Install the Azure DevOps extension (creates the "az repos" commands):
+#        az extension add --name azure-devops
+#      Verify the installation with:
+#        az extension list
+#
+# Usage: run this script from the workspace root.
+#   bash ./scripts/open-prs.sh <branch_name> <title> <pr-type>
+#
+#   branch_name: the branch to open the PRs from; it must start with the work item number (e.g. 80771-customer-order-details)
+#   title:       a short description; the "[TYPE] - <work-item>: type:" prefix is added automatically
+#   pr-type:     one of SYNC, DEPLOY, BUGFIX, FEATURE, HOTFIX, or any custom value
 #
 # Example:
-# bash ./scripts/open-prs.sh 80771-customer-order-details "[FEATURE] - 80771: Adding costumer order details drawer" 80771 FEATURE No
-# bash ./scripts/open-prs.sh 81375-customer-order-enum-values "[BUGFIX] - 81375: Fixing enum values" 81375 BUGFIX No
-# bash ./scripts/open-prs.sh 82315-technical-order-details-order-adjustments "[FEATURE] - 82315: technical order details order adjustments" 82315 FEATURE No
-# bash ./scripts/open-prs.sh 82928-adjust-properties "[FIX] - 82928: Adjust properties" 82928 BUGFIX No
-# bash ./scripts/open-prs.sh 82822-master-data-management-test-definition-scroll-jumps-to-top "[FIX] - 82822: fix: Transfer scroll" 82822 BUGFIX No
-# bash ./scripts/open-prs.sh 83335-fix-shipment-and-production-reason "[FIX] - 83335: fix: Shipment and production reason" 83335 BUGFIX No
-# bash ./scripts/open-prs.sh 82980-short-reschedule-refactor "[FIX] - 82980: fix: short reschedule refactor" 82980 BUGFIX No
-# bash ./scripts/open-prs.sh 82861-fix-diagram-modal "diagram popup" BUGFIX
-# bash ./scripts/open-prs.sh 82543-customer-order-details-general-improvements "customer order details general improvements" FEATURE
-# bash ./scripts/open-prs.sh 83807-order-management-missing-code "order management missing code to open details" BUGFIX
-# bash ./scripts/open-prs.sh 84091-chemical-formula "add chemical formula construction and usage components" FEATURE
+# bash ./scripts/open-prs.sh 80771-customer-order-details "Adding customer order details drawer" FEATURE
+# bash ./scripts/open-prs.sh 81375-customer-order-enum-values "Fixing enum values" BUGFIX
 # bash ./scripts/open-prs.sh 84987-chemical-formula "add chemical formula \"readonly\" and \"remove last part\"" FEATURE
-# bash ./scripts/open-prs.sh 83673-diagram-popover-out-of-bounds "fix diagram popover out off bounds" BUGFIX
-# bash ./scripts/open-prs.sh 85268-predicate-editor-i18n "fix predicate editor i18n" BUGFIX
-# bash ./scripts/open-prs.sh 85580-minimatch-fix "setting minimatch version to ignore * from some dependencies" BUGFIX
-# bash ./scripts/open-prs.sh 81061-open-new-tab "links not opening new tabs" BUGFIX
-# bash ./scripts/open-prs.sh 85247-field-data-cleared "Master Data - field data cleared" BUGFIX
 # bash ./scripts/open-prs.sh 85083-lookup-delay 'Master Data - lookup table - delay when typing in edit mode' BUGFIX
-# bash ./scripts/open-prs.sh 86357-lookup-new-line 'Master Data - lookup table - delete edited data when new line is added' BUGFIX
+# bash ./scripts/open-prs.sh 92143-live-data 'Material Management - Implement New Plasma Main DataGrid' FEATURE
 
 if [ "$#" -ne 3 ]; then
     echo "Usage: $0 <branch_name> <title> <pr-type>"
@@ -41,6 +42,11 @@ TITLE=$2
 PR_TYPE=$3
 
 WORK_ITEM=$(echo "$BRANCH_NAME" | grep -oE '^[0-9]+')
+if [ -z "$WORK_ITEM" ]; then
+    echo "ERROR: could not extract a work item number from branch '$BRANCH_NAME'." >&2
+    echo "Expected a branch starting with digits (e.g. 12345-feature-name)." >&2
+    exit 1
+fi
 
 PR_TYPE_UPPER=$(echo "$PR_TYPE" | tr '[:lower:]' '[:upper:]')
 case "$PR_TYPE_UPPER" in
@@ -55,7 +61,41 @@ VERSION_CHANGE='No'
 ORG_URL="https://dev.azure.com/sms-digital"
 PROJECT_NAME="CoC Planning"
 PR_TYPES=("SYNC" "DEPLOY" "BUGFIX" "FEATURE" "HOTFIX")
-REPO_PATH="packages/mes-frontend"
+
+# ================================== #
+# =========== Validation =========== #
+# ================================== #
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Resolve the workspace root: prefer the current directory, then fall back to
+# the directory that contains this script.
+if [ -d "$PWD/packages/mes-frontend" ]; then
+    WORKSPACE_ROOT="$PWD"
+elif [ -d "$SCRIPT_DIR/../packages/mes-frontend" ]; then
+    WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+else
+    echo "ERROR: could not find 'packages/mes-frontend' in '$PWD' nor in '$SCRIPT_DIR/..'." >&2
+    echo "Run this script from the workspace root, e.g.: bash ./scripts/open-prs.sh <branch> <title> <pr-type>" >&2
+    exit 1
+fi
+REPO_PATH="$WORKSPACE_ROOT/packages/mes-frontend"
+
+if ! command -v az >/dev/null 2>&1; then
+    echo "ERROR: Azure CLI ('az') was not found in PATH." >&2
+    exit 1
+fi
+
+if [ -z "$(az extension list --query "[?name=='azure-devops'].name" -o tsv 2>/dev/null)" ]; then
+    echo "ERROR: the 'azure-devops' Azure CLI extension is not installed." >&2
+    echo "Install it with: az extension add --name azure-devops" >&2
+    exit 1
+fi
+
+echo "Workspace root: $WORKSPACE_ROOT"
+echo "Branch:         $BRANCH_NAME"
+echo "Title:          $TITLE"
+echo ""
 
 # ================================== #
 # ========= PR type string ========= #
@@ -110,24 +150,42 @@ fi
 # ================================== #
 
 REPOS=$(find "$REPO_PATH" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
-for REPO in $REPOS; do
-    # echo "Processing repository: $REPO"
+CREATED=0
+SKIPPED=0
+FAILED=0
 
-    # Check if the branch exists in the git repository
-    git -C "$REPO_PATH/$REPO" show-ref --verify --quiet "refs/heads/$BRANCH_NAME"
-    if [ $? -ne 0 ]; then
-        # echo "Branch '$BRANCH_NAME' does not exist in local repository '$REPO'. Skipping..."
+for REPO in $REPOS; do
+    echo "Processing repository: $REPO"
+
+    # Check if the branch exists in the local git repository
+    if ! git -C "$REPO_PATH/$REPO" show-ref --verify --quiet "refs/heads/$BRANCH_NAME"; then
+        echo "  SKIP: branch '$BRANCH_NAME' does not exist locally."
+        SKIPPED=$((SKIPPED + 1))
         continue
     fi
 
-    # Check if the branch exists in the repository
-    if ! az repos ref list --org "$ORG_URL" --project "$PROJECT_NAME" --repository "$REPO" --filter "heads/$BRANCH_NAME" --query "[?name=='refs/heads/$BRANCH_NAME']" | grep -q "refs/heads/$BRANCH_NAME"; then
-        # echo "Branch '$BRANCH_NAME' does not exist in repository '$REPO'. Skipping..."
+    # Check if the branch exists on the remote repository
+    REF_OUTPUT=$(az repos ref list \
+        --org "$ORG_URL" \
+        --project "$PROJECT_NAME" \
+        --repository "$REPO" \
+        --filter "heads/$BRANCH_NAME" \
+        --query "[?name=='refs/heads/$BRANCH_NAME']" 2>&1)
+    REF_STATUS=$?
+    if [ $REF_STATUS -ne 0 ]; then
+        echo "  ERROR: failed to query the remote branch (az exited with $REF_STATUS)." >&2
+        printf '%s\n' "$REF_OUTPUT" >&2
+        FAILED=$((FAILED + 1))
+        continue
+    fi
+    if ! grep -q "refs/heads/$BRANCH_NAME" <<< "$REF_OUTPUT"; then
+        echo "  SKIP: branch '$BRANCH_NAME' does not exist on the remote."
+        SKIPPED=$((SKIPPED + 1))
         continue
     fi
 
     # Create the pull request
-    az repos pr create \
+    PR_OUTPUT=$(az repos pr create \
         --org "$ORG_URL" \
         --project "$PROJECT_NAME" \
         --repository "$REPO" \
@@ -187,13 +245,23 @@ for REPO in $REPOS; do
         "" \
         "## Screenshots or Images" \
         "" \
-        "You can just drag and drop screenshots or images here to provide visual context for your changes:"
+        "You can just drag and drop screenshots or images here to provide visual context for your changes:" 2>&1)
+    PR_STATUS=$?
 
-    if [ $? -ne 0 ]; then
-        echo "Failed to create pull request for repository: $REPO"
+    if [ $PR_STATUS -ne 0 ]; then
+        echo "  ERROR: failed to create the pull request (az exited with $PR_STATUS)." >&2
+        printf '%s\n' "$PR_OUTPUT" >&2
+        FAILED=$((FAILED + 1))
     else
-        echo "Pull request created successfully for repository: $REPO"
+        echo "  OK: pull request created."
+        printf '%s\n' "$PR_OUTPUT"
+        CREATED=$((CREATED + 1))
     fi
 
     echo ""
 done
+
+echo "Summary: created=$CREATED skipped=$SKIPPED failed=$FAILED"
+if [ "$FAILED" -gt 0 ]; then
+    exit 1
+fi

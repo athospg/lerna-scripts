@@ -56,37 +56,38 @@ done
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 # Check if the specified branch exists on remote origin
-REMOTE_BRANCH_EXISTS=$(git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null && echo "true" || echo "false")
+REMOTE_BRANCH_EXISTS=$(git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null && echo "true" || echo "false")
 
 # Determine the branch to checkout
 if [ "$REMOTE_BRANCH_EXISTS" == "true" ]; then
-    BRANCH_TO_CHECKOUT="$BRANCH"
+  BRANCH_TO_CHECKOUT="$BRANCH"
 else
-    if [ "$ONLY_IF_EXISTS" = true ]; then
-        echo "Branch '$BRANCH' does not exist on remote. Staying on current branch '$CURRENT_BRANCH'."
-        exit 0
-    fi
-    echo "Branch '$BRANCH' does not exist on remote. Defaulting to 'develop'."
-    BRANCH_TO_CHECKOUT="develop"
+  if [ "$ONLY_IF_EXISTS" = true ]; then
+    echo "Branch '$BRANCH' does not exist on remote. Staying on current branch '$CURRENT_BRANCH'."
+    exit 0
+  fi
+  echo "Branch '$BRANCH' does not exist on remote. Defaulting to 'develop'."
+  BRANCH_TO_CHECKOUT="develop"
 fi
 
 HAS_STASH=0
 
+# Stash any changes and checkout the target branch
+echo "Stashing changes."
+
+# Stash current changes
+STASH_OUTPUT=$(git stash push -m "Stash before updating")
+echo $STASH_OUTPUT
+# Check if any files were stashed
+if [[ $STASH_OUTPUT != "No local changes"* ]]; then
+  HAS_STASH=1
+fi
+
 # Exit if the current branch is the same as the branch to checkout
 if [ "$CURRENT_BRANCH" == "$BRANCH_TO_CHECKOUT" ]; then
-    echo "Already on branch '$BRANCH_TO_CHECKOUT'. No changes needed."
+  echo "Already on branch '$BRANCH_TO_CHECKOUT'. No changes needed."
 else
-  # Stash any changes and checkout the target branch
-  echo "Stashing changes and checking out branch '$BRANCH_TO_CHECKOUT'."
-
-  # Stash current changes
-  STASH_OUTPUT=$(git stash push -m "Stash before updating")
-  echo $STASH_OUTPUT
-  # Check if any files were stashed
-  if [[ $STASH_OUTPUT != "No local changes"* ]]; then
-      HAS_STASH=1
-  fi
-
+  echo "Checking out branch '$BRANCH_TO_CHECKOUT'."
   git checkout "$BRANCH_TO_CHECKOUT"
 fi
 
